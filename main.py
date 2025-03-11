@@ -18,6 +18,7 @@ models.Base.metadata.create_all(bind=engine)
 
 # Configure CORS
 origins = [
+    "https://player-angular-five.vercel.app",
     "http://localhost:4200",  # Angular default port
 ]
 

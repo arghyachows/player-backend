@@ -25,7 +25,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 origins = [
     "http://localhost:4200",
     "http://localhost:3000",
-    "https://yourdomain.com"
+    "https://yourdomain.com",
+    "https://player-angular-five.vercel.app"
 ]
 
 def verify_password(plain_password, hashed_password):
