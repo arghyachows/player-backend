@@ -184,6 +184,22 @@ def delete_player(
     db.commit()
     return {"message": "Player deleted successfully"}
 
+
+@app.get("/search", response_model=List[schemas.Player], tags=["Players"])
+def search_players_by_name(
+    name: str,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: models.User = Security(auth.get_current_active_user, scopes=[])
+):
+    players = db.query(models.Player).filter(models.Player.name.ilike(f"%{name}%")).offset(skip).limit(limit).all()
+    if not players:
+        raise HTTPException(status_code=404, detail="No players found with the given name")
+    return players
+
+# ...existing code...
+
 @app.post("/players/upload-csv", response_model=List[schemas.Player], tags=["Players"])
 async def upload_players_csv(
     file: UploadFile = File(...),
