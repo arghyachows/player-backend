@@ -80,7 +80,7 @@ def custom_openapi():
 app.openapi = custom_openapi
 
 # Auth endpoints
-@app.post("/api/signup", response_model=schemas.User, tags=["Authentication"])
+@app.post("/signup", response_model=schemas.User, tags=["Authentication"])
 def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = auth.get_user(db, username=user.username)
     if db_user:
@@ -97,7 +97,7 @@ def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
-@app.post("/api/token", response_model=schemas.Token, tags=["Authentication"])
+@app.post("/token", response_model=schemas.Token, tags=["Authentication"])
 async def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     user = auth.authenticate_user(db, credentials.username, credentials.password)
     if not user:
@@ -112,7 +112,7 @@ async def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/api/logout", tags=["Authentication"])
+@app.post("/logout", tags=["Authentication"])
 async def logout(
     current_user: models.User = Security(auth.get_current_active_user, scopes=[])
 ):
@@ -120,7 +120,7 @@ async def logout(
     return {"message": "Successfully logged out"}
 
 # Player endpoints
-@app.post("/api/players/", response_model=schemas.Player, tags=["Players"])
+@app.post("/players/", response_model=schemas.Player, tags=["Players"])
 def create_player(
     player: schemas.PlayerCreate,
     db: Session = Depends(get_db),
@@ -132,7 +132,7 @@ def create_player(
     db.refresh(db_player)
     return db_player
 
-@app.get("/api/players/", response_model=List[schemas.Player], tags=["Players"])
+@app.get("/players/", response_model=List[schemas.Player], tags=["Players"])
 def read_players(
     skip: int = 0,
     limit: int = 100,
@@ -142,7 +142,7 @@ def read_players(
     players = db.query(models.Player).offset(skip).limit(limit).all()
     return players
 
-@app.get("/api/players/{player_id}", response_model=schemas.Player, tags=["Players"])
+@app.get("/players/{player_id}", response_model=schemas.Player, tags=["Players"])
 def read_player(
     player_id: int,
     db: Session = Depends(get_db),
@@ -153,7 +153,7 @@ def read_player(
         raise HTTPException(status_code=404, detail="Player not found")
     return player
 
-@app.put("/api/players/{player_id}", response_model=schemas.Player, tags=["Players"])
+@app.put("/players/{player_id}", response_model=schemas.Player, tags=["Players"])
 def update_player(
     player_id: int,
     player: schemas.PlayerUpdate,
@@ -171,7 +171,7 @@ def update_player(
     db.refresh(db_player)
     return db_player
 
-@app.delete("/api/players/{player_id}", tags=["Players"])
+@app.delete("/players/{player_id}", tags=["Players"])
 def delete_player(
     player_id: int,
     db: Session = Depends(get_db),
@@ -186,7 +186,7 @@ def delete_player(
     return {"message": "Player deleted successfully"}
 
 
-@app.get("/api/search", response_model=List[schemas.Player], tags=["Players"])
+@app.get("/search", response_model=List[schemas.Player], tags=["Players"])
 def search_players_by_name(
     name: str,
     skip: int = 0,
@@ -201,7 +201,7 @@ def search_players_by_name(
 
 # ...existing code...
 
-@app.post("/api/players/upload-csv", response_model=List[schemas.Player], tags=["Players"])
+@app.post("/players/upload-csv", response_model=List[schemas.Player], tags=["Players"])
 async def upload_players_csv(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
